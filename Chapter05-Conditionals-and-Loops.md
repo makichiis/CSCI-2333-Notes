@@ -143,7 +143,7 @@ L1:
 
 A rough equivalent in C++ might look like:
 ```cpp
-auto val = 0;
+auto val = 1;
 for (int i = 0; i < 5; ++i) {
     ++val;
 }
