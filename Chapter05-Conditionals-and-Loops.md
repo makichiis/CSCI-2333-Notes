@@ -89,6 +89,7 @@ end:
     invoke ExitProcess, 0
 ```
 
+## Loops
 Labels may also be used to indicate the beginning of a repeating block of code, such that the code after the label can be called multiple times.
 
 An example of an unconditional loop:
@@ -100,4 +101,17 @@ middle: ; No break condition, runs forever
     jmp middle
 bottom:
     invoke ExitProcess, 0
+```
+
+This code isn't very useful unless you want `middle` to execute forever. We can define a control structure for conditional loops using the `TEST/CMP` and `JMP` instructions, the way we do for conditional branching.
+
+An example of a loop that counts to 5:
+```c
+mov ecx, 6
+mov eax, 0
+L1:
+    inc eax
+    dec ecx
+    cmp ecx, 0
+    je L1
 ```
