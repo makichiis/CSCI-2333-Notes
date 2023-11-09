@@ -89,6 +89,31 @@ end:
     invoke ExitProcess, 0
 ```
 
+A rough equivalent in C++ might look like:
+```cpp
+int main() {
+    auto a = 5;
+    a += 3;
+    if (a == 8) {
+        std::cout << "a is 8!\n";
+    }
+    return 0;
+}
+```
+
+Or more accurately (but not as intuitively):
+```cpp
+int main() {
+    auto a = 5;
+    a += 3;
+    if (a != 8) { goto end; }
+middle:
+    std::cout << "a is 8!\n";
+end:
+    return 0;
+}
+```
+
 ## Loops
 Labels may also be used to indicate the beginning of a repeating block of code, such that the code after the label can be called multiple times.
 
@@ -107,11 +132,19 @@ This code isn't very useful unless you want `middle` to execute forever. We can 
 
 An example of a loop that counts to 5:
 ```c
-mov ecx, 6
-mov eax, 0
+mov ecx, 5
+mov eax, 1
 L1:
     inc eax
     dec ecx
     cmp ecx, 0
     je L1
+```
+
+A rough equivalent in C++ might look like:
+```cpp
+auto val = 0;
+for (int i = 0; i < 5; ++i) {
+    ++val;
+}
 ```
