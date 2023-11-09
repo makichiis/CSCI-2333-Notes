@@ -16,7 +16,7 @@ bottom:
 ## Conditions/Branching
 
 Labels may be used to skip execution of blocks of code based off of conditional evaluation. Conditions may
-be evaluated using the `TEST` or `CMP` instructions.
+be evaluated using the `TEST` or `CMP` instructions. This is called *branching*.
 
 #### `TEST M/R L/M/R`
 The `TEST` instruction performs a `bitwise AND` on two operands. 
@@ -48,7 +48,7 @@ The values of these flags are used in various jump operations. Rather than havin
 
 Below is a list of jump instructions which check the flag registers:
 
-| Flag   | Instruction | Description                   | Semantic                                         |
+| Flag   | Instruction | Description                   | Semantic (Using `CMP`)                           |
 | ------ | ----------- | ----------------------------- | ------------------------------------------------ |
 | OF = 1 | JO          | Jump if overflow flag is `1`. | Jump if overflow has occurred.                   |
 | OF = 0 | JNO         | Jump if overflow flag is `0`. | Jump if overflow has not occurred.               |
@@ -59,10 +59,10 @@ Below is a list of jump instructions which check the flag registers:
 | ZF = 1 | JE/JZ       | Jump if zero flag is `1`.     | Jump if `op1` is equal to `op2`.                 |
 | ZF = 0 | JNE/JNZ     | Jump if zero flag is `0`.     | Jump if `op1` is not equal to `op2`.             |
 | CF = 1 | JB/JC/JNAE  | Jump if carry flag is `1`.    | Jump if `op1` is less than `op2`.                |
-| CF = 0 | JAE/JNB/JNC | Jump if carry flag is `0`.    | Jump uf `op1` is greater than or equal to `op2`. |
+| CF = 0 | JAE/JNB/JNC | Jump if carry flag is `0`.    | Jump if `op1` is greater than or equal to `op2`. |
 
 The following instructions *compare* flag registers:
-| Flag               | Instruction | Description                      | Semantic                                                 |
+| Flag               | Instruction | Description                      | Semantic (Using `CMP`)                                   |
 | ------------------ | ----------- | -------------------------------- | -------------------------------------------------------- |
 | CF = 1 OR ZF = 1   | JBE/JNA     | Jump if CF is `1` or ZF is `1`.  | (Unsigned) Jump if `op1` is less than or equal to `op2`. |
 | CF = 0 AND ZF = 0  | JA/JNBE     | Jump if CF is `0` and ZF is `0`. | (Unsigned) Jump if `op1` is greater than `op2`.          |
@@ -76,7 +76,7 @@ correspond to the exact same opcodes in machine code. That is, they
 are virtually the same instructions.
 
 An example of checking whether two values are equal:
-```c
+```asm
 main:
     mov eax, 5
     add eax, 3
@@ -88,6 +88,7 @@ middle:
 end:
     invoke ExitProcess, 0
 ```
+> *Note: This print operation probably wouldn't work, I just haven't yet found a way to actually print text that would be intuitive for this section.*
 
 A rough equivalent in C++ might look like:
 ```cpp
@@ -118,7 +119,7 @@ end:
 Labels may also be used to indicate the beginning of a repeating block of code, such that the code after the label can be called multiple times.
 
 An example of an unconditional loop:
-```c
+```asm
 top:
     mov eax, 10
 middle: ; No break condition, runs forever
@@ -131,7 +132,7 @@ bottom:
 This code isn't very useful unless you want `middle` to execute forever. We can define a control structure for conditional loops using the `TEST/CMP` and `JMP` instructions, the way we do for conditional branching.
 
 An example of a loop that counts to 5:
-```c
+```asm
 mov ecx, 5
 mov eax, 1
 L1:
