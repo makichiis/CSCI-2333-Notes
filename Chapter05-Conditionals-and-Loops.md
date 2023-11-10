@@ -1,4 +1,9 @@
-# Labels
+# Chapter 5 -- Conditions and Loops
+Conditions are necessary to implement *control structures* in a program. Most programs are not very practical without the ability to change the course of execution based on evaluation of input data.
+
+Software also implements *loops* to repeat a series of instructions until a break condition is met. This is useful in many applications, especially ones with interactive user-facing interfaces.
+
+## Labels
 A label is a location in your program which can be *jumped* to from another location using the `JMP`
 instruction.
 
