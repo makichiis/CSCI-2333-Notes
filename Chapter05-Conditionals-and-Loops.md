@@ -3,11 +3,11 @@ A label is a location in your program which can be *jumped* to from another loca
 instruction.
 
 An example of an unconditional jump:
-```c
+```asm
 top:
     mov eax, 10
     jmp bottom
-middle: ; line under middle never runs
+middle: ; line under middle never runs, eax is still 10
     add eax, 5
 bottom:
     invoke ExitProcess, 0
@@ -16,7 +16,7 @@ bottom:
 ## Conditions/Branching
 
 Labels may be used to skip execution of blocks of code based off of conditional evaluation. Conditions may
-be evaluated using the `TEST` or `CMP` instructions. This is called *branching*.
+be evaluated using the `TEST` or `CMP` instructions. Conditional checks can be used to change what code is executed on the stack. This is called [*branching*](https://en.wikipedia.org/wiki/Branch_(computer_science)).
 
 #### `TEST M/R L/M/R`
 The `TEST` instruction performs a `bitwise AND` on two operands. 
@@ -46,6 +46,8 @@ The result of the subtraction is discarded; however, the following flags are set
 
 The values of these flags are used in various jump operations. Rather than having conditional directives (like with `if/else` in C++), assembly languages contain numerous *jump* instructions that perform conditional branching based on the value of the flag registers.
 
+> *Visual Studio note: You can find information on how to use the `Register` window in debug mode [here](https://learn.microsoft.com/en-us/visualstudio/debugger/debugging-basics-registers-window?view=vs-2022).*
+
 Below is a list of jump instructions which check the flag registers:
 
 | Flag   | Instruction | Description                   | Semantic (Using `CMP`)                           |
@@ -74,6 +76,15 @@ The following instructions *compare* flag registers:
 > Instructions that are separated by forwardslashes on the same entry
 correspond to the exact same opcodes in machine code. That is, they
 are virtually the same instructions.
+
+> **Every *jump* instruction has a single operand, which is the *LABEL* at which to jump.**
+
+There also exists conditional struct instructions for checking the `CX/ECX/RCX` register:
+| Register | Instruction   | Description                     |
+| -------- | ------------- | ------------------------------- |
+| *`CX`*   | JCXZ *LABEL*  | Jump to *LABEL* if CX is `0`.   |
+| *`ECX`*  | JECXZ *LABEL* | Jump to *LABEL* if ECX is `0`.  |
+| *`RCX`*  | JRCXZ *LABEL* | Jump to *LABEL* if RCX is `0`.  |
 
 An example of checking whether two values are equal:
 ```asm
@@ -149,3 +160,101 @@ for (int i = 0; i < 5; ++i) {
     ++val;
 }
 ```
+
+## Looping using CX/ECX/RCX
+
+#### `LOOP `*`LABEL`*
+The `LOOP` instruction internally decrements `CX/ECX/RCX` *then* jumps to the operand *`LABEL`* if `CX/ECX/RCX` is not zero.
+
+An example of a loop that repeats five times, using `EAX` to keep track of iterations:
+```asm
+.code
+_main PROC
+	mov eax, 0
+	mov ecx, 5
+L1:
+	inc eax
+	loop L1
+
+    ; By this point, eax is equal to 5
+
+	INVOKE ExitProcess, 0
+_main ENDP
+```
+
+You can use `ECX` directly as a counter register without the use of the `LOOP` instruction. The code above is semantically equivalent to:
+```asm
+.code
+_main PROC
+    mov eax, 0
+    mov ecx, 5
+L1:
+    inc eax
+
+    dec ecx
+    cmp ecx, 0
+    jne L1
+
+    ; By this point, eax is equal to 5
+
+_main ENDP
+```
+
+A rough C++ equivalent might look like:
+```cpp
+int main() {
+    int a = 0;
+    int i = 5;
+    do {
+        ++a;
+    } while (--i != 0);
+
+    std::cout << a << '\n';
+}
+```
+
+## Extras -- Compound Conditionals
+A *compound conditional* statement is simply a boolean statement which tests multiple conditions in one expression. You've undoubtedly seen (if not written) your own before. Examples include boolean *AND* and boolean *OR* conditional statements:
+```cpp
+if (a > b && b > c) {
+    ...
+}
+
+if (a > b || b > c) {
+    ...
+}
+```
+
+An intrinsic of boolean AND is that if the first condition of `A && B` (`A`) evalutes to *false*, the second condition (`B`) is never evaluated, since the entire statement will evaluate as *false* anyway. This is called [*short-circuit evaluation*](https://en.wikipedia.org/wiki/Short-circuit_evaluation). 
+
+A rough equivalent of the boolean AND operation in MASM might look like:
+```asm
+cmp ax, bx
+jbe next    ;  skip to `next` if `ax > bx` is false
+cmp bx, cx
+jbe next    ;  skip to `next` if `bx > cx` is false
+
+...         ;  will only run if ax > bx and bx > cx
+
+next:
+```
+
+The inverse is true for boolean OR. If `A` in the statement `A || B` evaluates to true, `B` is not evaluated, since `true || X` is true whether *`X`* is true or false.
+
+A rough equivalent of the boolean OR operation in MASM might look like:
+```asm
+cmp  ax, bx
+ja   or_true  ;  if `ax > bx` is true, don't bother checking second condition
+cmp  bx, cx
+jbe  next     ;  skip past or_true if `bx > cx` is false.
+
+or_true:
+...           ;  will run if `ax > bx` is true or `bx > cx` is true
+
+next:
+```
+
+## Contributing/Issues
+If anything is missing, or anything from these notes are confusing, feel free to reach out. You can open a GitHub issue or message me on Discord at @`zaruhev`.
+___
+Copyleft (Ↄ) Sarah Evans 
