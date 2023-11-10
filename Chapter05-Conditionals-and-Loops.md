@@ -108,7 +108,7 @@ end:
 
 A rough equivalent in C++ might look like:
 ```cpp
-int main() {
+auto main() -> int {
     auto a = 5;
     a += 3;
     if (a == 8) {
@@ -120,7 +120,7 @@ int main() {
 
 Or more accurately (but not as intuitively):
 ```cpp
-int main() {
+auto main() -> int {
     auto a = 5;
     a += 3;
     if (a != 8) { goto end; }
@@ -161,7 +161,7 @@ L1:
 A rough equivalent in C++ might look like:
 ```cpp
 auto val = 1;
-for (int i = 0; i < 5; ++i) {
+for (auto i = 0; i < 5; ++i) {
     ++val;
 }
 ```
@@ -207,9 +207,9 @@ _main ENDP
 
 A rough C++ equivalent might look like:
 ```cpp
-int main() {
-    int a = 0;
-    int i = 5;
+auto main() -> int {
+    auto a = 0;
+    auto i = 5;
     do {
         ++a;
     } while (--i != 0);
