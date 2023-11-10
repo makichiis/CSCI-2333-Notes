@@ -84,7 +84,7 @@ are virtually the same instructions.
 
 > **Every *jump* instruction has a single operand, which is the *LABEL* at which to jump.**
 
-There also exists conditional struct instructions for checking the `CX/ECX/RCX` register:
+There also exists conditional jump instructions for checking the `CX/ECX/RCX` register:
 | Register | Instruction   | Description                     |
 | -------- | ------------- | ------------------------------- |
 | *`CX`*   | JCXZ *LABEL*  | Jump to *LABEL* if CX is `0`.   |
